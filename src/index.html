@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Vue.js</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body :class="darkMode ? 'dark-mode' : ''">
+    <div id="app">
+        <nav class="navbar navbar-expand-lg" :class="darkMode ? 'navbar-dark bg-dark' : 'navbar-dark bg-primary'">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Portfolio Décamps Corentin</a>
+                <button class="btn btn-outline-light ms-auto" @click="toggleDarkMode">
+                    <span v-if="darkMode">💡</span>
+                    <span v-else>🌙</span>
+                </button>
+            </div>
+        </nav>
+        
+        <div class="container content">
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <img src="Moi.png" class="card-img-top" alt="Photo de profil">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ nom }}</h5>
+                            <p class="card-text">{{ description }}</p>
+                            <button class="btn btn-primary" @click="afficherModal = true">Lettre de motivation</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <ul class="nav nav-tabs justify-content-end">
+                        <li class="nav-item" v-for="(tab, index) in tabs" :key="index">
+                            <a class="nav-link" :class="{ active: activeTab === tab.id }" @click="activeTab = tab.id">{{ tab.label }}</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3">
+                        <div v-if="activeTab === 'experience'">
+                            <h4>Expériences</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item" v-for="exp in experiences" :key="exp">{{ exp }}</li>
+                            </ul>
+                        </div>
+                        <div v-if="activeTab === 'education'">
+                            <h4>Éducation</h4>
+                            <ul class="list-group">
+                                <li class="list-group-item" v-for="edu in education" :key="edu">{{ edu }}</li>
+                            </ul>
+                        </div>
+                        <div v-if="activeTab === 'competences'">
+                            <h4>Compétences</h4>
+                            <span class="badge bg-primary" v-for="comp in competences" :key="comp" :title="'Compétence en ' + comp" data-bs-toggle="tooltip" data-bs-placement="top">{{ comp }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="carouselProjects" class="carousel slide mt-5" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item" v-for="(project, index) in projects" :key="index" :class="{ active: index === 0 }">
+                        <img :src="project.image" class="d-block w-100" :alt="project.title">
+                        <div class="carousel-caption">
+                            <h5>{{ project.title }}</h5>
+                            <button class="btn btn-secondary">Voir projet</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProjects" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselProjects" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5">
+        <p>Made with <span style="color: red;">&hearts;</span> by Sylangkk</p>
+    </footer>
+    
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    nom: "Décamps Corentin",
+                    description: "Développeuse web ~ Passionnée par le front-end et Back-end ~ Engouée par le design.",
+                    activeTab: 'experience',
+                    afficherModal: false,
+                    darkMode: false,
+                    experiences: ["Développeur Web - Entreprise X (2023)", "Stage en développement - Entreprise Y (2022)"],
+                    education: ["Licence Informatique - Université Z", "Baccalauréat Scientifique"],
+                    competences: ["HTML", "CSS", "JavaScript", "Vue.js", "Bootstrap"],
+                    lettreMotivation: "Je suis passionné par le développement web et souhaiterais rejoindre votre entreprise afin de mettre à profit mes compétences...",
+                    tabs: [
+                        { id: 'experience', label: 'Expérience' },
+                        { id: 'education', label: 'Éducation' },
+                        { id: 'competences', label: 'Compétences' }
+                    ],
+                    projects: [
+                        { title: "Projet 1: Site Web Portfolio", image: "../img/tresorsculturel.png" },
+                        { title: "Projet 2: Application Vue.js", image: "../img/tresorsculturel.png" },
+                        { title: "Projet 3: Dashboard Admin", image: "../img/tresorsculturel.png" }
+                    ]
+                };
+            },
+            mounted() {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            },
+            methods: {
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    document.body.classList.toggle('dark-mode', this.darkMode);
+                }
+            }
+        });
+        
+        app.mount('#app');
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
