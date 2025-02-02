@@ -1,133 +1,264 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Vue.js</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
-    <script src="https://unpkg.com/vue@3"></script>
-    <script src="https://unpkg.com/axios@latest"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body :class="darkMode ? 'dark-mode' : ''">
-    <div id="app">
-        <nav class="navbar navbar-expand-lg" :class="darkMode ? 'navbar-dark bg-dark' : 'navbar-dark bg-primary'">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Portfolio Décamps Corentin</a>
-                <button class="btn btn-outline-light ms-auto" @click="toggleDarkMode">
-                    <span v-if="darkMode">💡</span>
-                    <span v-else>🌙</span>
-                </button>
-            </div>
-        </nav>
-        
-        <div class="container content">
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="card text-center">
-                        <img src="Moi.png" class="card-img-top" alt="Photo de profil">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ nom }}</h5>
-                            <p class="card-text">{{ description }}</p>
-                            <button class="btn btn-primary" @click="afficherModal = true">Lettre de motivation</button>
-                        </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Portfolio Vue.js</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+        <script src="https://unpkg.com/vue@3"></script>
+        <script src="https://unpkg.com/axios@latest"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body :class="darkMode ? 'dark-mode' : ''">
+        <div id="app">
+            <div class="container w-100 custom-height">
+                <nav class="navbar navbar-expand-lg" :class="darkMode ? 'navbar-dark bg-dark' : 'navbar-dark bg-primary'">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Portfolio Décamps Corentin</a>
+                        <button class="btn btn-outline-light ms-auto" @click="toggleDarkMode">
+                            <span v-if="darkMode">💡</span>
+                            <span v-else>🌙</span>
+                        </button>
                     </div>
-                </div>
-                <div class="col-md-8">
-                    <ul class="nav nav-tabs justify-content-end">
-                        <li class="nav-item" v-for="(tab, index) in tabs" :key="index">
-                            <a class="nav-link" :class="{ active: activeTab === tab.id }" @click="activeTab = tab.id">{{ tab.label }}</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content mt-3">
-                        <div v-if="activeTab === 'experience'">
-                            <h4>Expériences</h4>
-                            <ul class="list-group">
-                                <li class="list-group-item" v-for="exp in experiences" :key="exp">{{ exp }}</li>
-                            </ul>
-                        </div>
-                        <div v-if="activeTab === 'education'">
-                            <h4>Éducation</h4>
-                            <ul class="list-group">
-                                <li class="list-group-item" v-for="edu in education" :key="edu">{{ edu }}</li>
-                            </ul>
-                        </div>
-                        <div v-if="activeTab === 'competences'">
-                            <h4>Compétences</h4>
-                            <span class="badge bg-primary" v-for="comp in competences" :key="comp" :title="'Compétence en ' + comp" data-bs-toggle="tooltip" data-bs-placement="top">{{ comp }}</span>
-                        </div>
-                    </div>
-                </div>
+                </nav>
             </div>
             
-            <div id="carouselProjects" class="carousel slide mt-5" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item" v-for="(project, index) in projects" :key="index" :class="{ active: index === 0 }">
-                        <img :src="project.image" class="d-block w-100" :alt="project.title">
-                        <div class="carousel-caption">
-                            <h5>{{ project.title }}</h5>
-                            <button class="btn btn-secondary">Voir projet</button>
+            <div class="container content">
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <img src="dc.jpg" class="card-img-top" alt="Photo de profil">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ nom }}</h5>
+                                <p class="card-text">{{ description }}</p>
+                                <button class="btn btn-primary" @click="afficherModal = true">Lettre de motivation</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <ul class="nav nav-tabs justify-content-start">
+                            <li class="nav-item" v-for="(tab, index) in tabs" :key="index">
+                                <a class="nav-link" :class="{ active: activeTab === tab.id }" @click="activeTab = tab.id">{{ tab.label }}</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3">
+                            <div v-if="activeTab === 'experience'">
+                                <h4 class="mb-4">Expériences</h4>
+                                <div class="timeline">
+                                    <div class="timeline-item" v-for="exp in experiences" :key="exp.id">
+                                        <img :src="exp.logo" alt="Logo entreprise" v-if="exp.logo">
+                                        <div class="content">
+                                            <span>{{ exp.role }} - {{ exp.company }} ({{ exp.year }})</span>
+                                            <label>{{ exp.description }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="activeTab === 'education'">
+                                <h4 class="mb-4">Éducation</h4>
+                                <div class="row">
+                                    <div class="col-md-6" v-for="edu in education" :key="edu.id">
+                                        <div class="card-custom">
+                                            <div class="card-header-custom">
+                                                {{ edu.degree }}
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="mb-1"><strong>Établissement:</strong> {{ edu.institution }}</p>
+                                                <p><strong>Année:</strong> {{ edu.year }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-content mt-3">
+                                <div v-if="activeTab === 'competences'">
+                                    <h4 class="mb-4">Compétences</h4>
+                                    <div class="row">
+                                        <div class="col-md-4" v-for="(category, index) in competencesCategories" :key="index">
+                                            <div class="skills-card">
+                                                <div :class="['skills-header', category.colorClass]">
+                                                    {{ category.name }}
+                                                </div>
+                                                <ul class="list-unstyled mt-3">
+                                                    <li
+                                                        class="skill-item"
+                                                        v-for="(skill, skillIndex) in category.skills"
+                                                        :key="skillIndex"
+                                                        :data-bs-toggle="'tooltip'"
+                                                        :data-bs-placement="'top'"
+                                                        :title="`Compétence en ${skill.name}`"
+                                                    >
+                                                        <img :src="skill.icon" alt="Icon" v-if="skill.icon">
+                                                        <span>{{ skill.name }}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                         </div>
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselProjects" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselProjects" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                
+                <div id="carouselProjects" class="carousel slide mt-5" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item" v-for="(project, index) in projects" :key="index" :class="{ active: index === 0 }">
+                            <img :src="project.image" class="d-block w-100" :alt="project.title">
+                            <div class="carousel-caption">
+                                <h5>{{ project.title }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselProjects" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselProjects" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <div 
+                    v-if="afficherModal" 
+                    class="modal-backdrop fade show" 
+                    @click="afficherModal = false">
+                </div>
+
+                <div
+                    class="modal fade"
+                    id="lettreModal"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="lettreModalLabel"
+                    aria-hidden="true"
+                    :class="{ show: afficherModal }"
+                    :style="{ display: afficherModal ? 'block' : 'none' }"
+                >
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="lettreModalLabel">Lettre de motivation</h5>
+                                <button type="button" class="btn-close" aria-label="Close" @click="afficherModal = false"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>{{ lettreMotivation }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" @click="afficherModal = false">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
 
-    <footer class="text-center mt-5">
-        <p>Made with <span style="color: red;">&hearts;</span> by Sylangkk</p>
-    </footer>
-    
-    <script>
-        const app = Vue.createApp({
-            data() {
-                return {
-                    nom: "Décamps Corentin",
-                    description: "Développeuse web ~ Passionnée par le front-end et Back-end ~ Engouée par le design.",
-                    activeTab: 'experience',
-                    afficherModal: false,
-                    darkMode: false,
-                    experiences: ["Développeur Web - Entreprise X (2023)", "Stage en développement - Entreprise Y (2022)"],
-                    education: ["Licence Informatique - Université Z", "Baccalauréat Scientifique"],
-                    competences: ["HTML", "CSS", "JavaScript", "Vue.js", "Bootstrap"],
-                    lettreMotivation: "Je suis passionné par le développement web et souhaiterais rejoindre votre entreprise afin de mettre à profit mes compétences...",
-                    tabs: [
-                        { id: 'experience', label: 'Expérience' },
-                        { id: 'education', label: 'Éducation' },
-                        { id: 'competences', label: 'Compétences' }
-                    ],
-                    projects: [
-                        { title: "Projet 1: Site Web Portfolio", image: "tresorsculturel.png" },
-                        { title: "Projet 2: Application Vue.js", image: "tresorsculturel.png" },
-                        { title: "Projet 3: Dashboard Admin", image: "tresorsculturel.png" }
-                    ]
-                };
-            },
-            mounted() {
-                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
-                });
-            },
-            methods: {
-                toggleDarkMode() {
-                    this.darkMode = !this.darkMode;
-                    document.body.classList.toggle('dark-mode', this.darkMode);
-                }
-            }
-        });
+        <footer class="text-center mt-5">
+            <p>Made with <span style="color: red;">&hearts;</span> by Sylangkk</p>
+        </footer>
         
-        app.mount('#app');
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        nom: "Décamps Corentin",
+                        description: "Alternant en Cybersécurité - Développeur Full Stack. Je suis passionné par le développement web et la cybersécurité.",
+                        activeTab: 'experience',
+                        afficherModal: false,
+                        darkMode: false,
+                        experiences: [
+                            { 
+                                id: 1, 
+                                role: "Alternant en Cybersécurité", 
+                                company: "Vallourec", 
+                                year: "2024 - 2025", 
+                                description: "Développement d'outils de sécurité informatique.",
+                                logo: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Vallourec_Logo.jpg"
+                            },
+                            { 
+                                id: 2, 
+                                role: "Stage en cybersécurité", 
+                                company: "Vallourec", 
+                                year: "2024", 
+                                description: "Développement d'outils de sécurité informatique.",
+                                logo: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Vallourec_Logo.jpg"
+                            },
+                            { 
+                                id: 3, 
+                                role: "Développeur Full Stack", 
+                                company: "Slanting Studios", 
+                                year: "2023", 
+                                description: "Développement d'applications web (front-end et back-end).",
+                                logo: "https://avatars.githubusercontent.com/u/108013216?s=200&v=4"
+                            }
+                        ],
+                        education: [
+                            { id: 1, degree: "DEUST IOSI", institution: "UPHF / INSA", year: "2022 - 2024" },
+                            { id: 2, degree: "Baccalauréat général (Maths / SI)", institution: "Lycée Kastler Denain", year: "2018 - 2022" }
+                        ],
+                        lettreMotivation: "Je suis passionné par le développement web et souhaiterais rejoindre votre entreprise afin de mettre à profit mes compétences...",
+                        tabs: [
+                            { id: 'experience', label: 'Expérience' },
+                            { id: 'education', label: 'Éducation' },
+                            { id: 'competences', label: 'Compétences' }
+                        ],
+                        projects: [
+                            { title: "Trésors Culturels", image: "tresorsculturel.png" },
+                            { title: "Site pour révision - DEUST IOSI", image: "site_deust.png" },
+                        ],
+                        competencesCategories: [
+                            {
+                                name: "Développement Web",
+                                colorClass: "bg-web",
+                                skills: [
+                                    { name: "HTML", icon: "https://img.icons8.com/color/48/html-5.png" },
+                                    { name: "CSS", icon: "https://img.icons8.com/color/48/css3.png" },
+                                    { name: "JavaScript", icon: "https://img.icons8.com/color/48/javascript.png" },
+                                    { name: "PHP", icon: "https://img.icons8.com/officel/40/php-logo.png" },
+                                    { name: "JSON", icon: "https://img.icons8.com/color/48/json.png" }
+                                ]
+                            },
+                            {
+                                name: "Développement Mobile",
+                                colorClass: "bg-mobile",
+                                skills: [
+                                    { name: "Java", icon: "https://img.icons8.com/color/48/java-coffee-cup-logo.png" },
+                                    { name: "Flutter", icon: "https://img.icons8.com/color/48/flutter.png" },
+                                    { name: "React Native", icon: "https://img.icons8.com/color/48/react-native.png" },
+                                    { name: "Kotlin", icon: "https://img.icons8.com/color/48/kotlin.png" }
+                                ]
+                            },
+                            {
+                                name: "Développement Logiciel",
+                                colorClass: "bg-software",
+                                skills: [
+                                    { name: "Python", icon: "https://img.icons8.com/color/48/python.png" },
+                                    { name: "C", icon: "https://img.icons8.com/color/48/c-programming.png" },
+                                    { name: "C++", icon: "https://img.icons8.com/color/48/c-plus-plus-logo.png" }
+                                ]
+                            }
+                        ]
+                    };
+                },
+                mounted() {
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                },
+                methods: {
+                    toggleDarkMode() {
+                        this.darkMode = !this.darkMode;
+                        document.body.classList.toggle('dark-mode', this.darkMode);
+                    }
+                }
+            });
+            
+            app.mount('#app');
+        </script>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>
